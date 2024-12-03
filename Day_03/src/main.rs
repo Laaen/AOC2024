@@ -1,4 +1,4 @@
-use regex::{Regex, RegexBuilder};
+use regex::Regex;
 use std::fs;
 
 fn part_1(data : &String) -> i32{
@@ -10,10 +10,11 @@ fn part_1(data : &String) -> i32{
 }
 
 fn part_2(data : &String) -> i32{
-    let re_suppr = RegexBuilder::new(r"don\'t\(\)(.*?)(?:do\(\)|$)").build().unwrap();
-    let new_data = re_suppr.replace_all(&data, "");
-    println!("{}", new_data);
-    part_1(&new_data.into_owned())
+    let re_suppr = Regex::new(r"(?:^|do\(\))(.*?)(?:don't\(\)|$)").unwrap();
+    re_suppr.captures_iter(&data)
+    .map(|m| m.extract())
+    .map(|(_, [capt])| part_1(&capt.to_string()))
+    .fold(0, |res, i| res + i)
 }
 
 fn main() {
