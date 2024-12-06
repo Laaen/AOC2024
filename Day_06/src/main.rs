@@ -58,15 +58,13 @@ fn main() {
 
     // Bruteforce
     // Add a # on each position
-    for (i, line) in grid.iter().enumerate(){
+    for (i, j) in visited{
 
         let result_cpy = result.clone();
         let mut grid_bis : Vec<String> = grid.clone().to_vec();
-        let line_cpy = line.clone();
 
         let handle = thread::spawn(move || {
-            for(j, chr) in line_cpy.chars().enumerate(){
-                if chr == '.'{
+                if get_char_at(&grid_bis, i, j) == '.'{
                     grid_bis[i].replace_range(j..j+1, "#");
             
                     // Get the current position
@@ -101,7 +99,6 @@ fn main() {
                     //println!("{:?}", grid_bis);
                     grid_bis[i].replace_range(j..j+1, ".");
                 }
-            }
         });
         handles.push(handle);
     }
