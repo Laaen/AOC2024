@@ -64,41 +64,41 @@ fn main() {
         let mut grid_bis : Vec<String> = grid.clone().to_vec();
 
         let handle = thread::spawn(move || {
-                if get_char_at(&grid_bis, i, j) == '.'{
-                    grid_bis[i].replace_range(j..j+1, "#");
+            if get_char_at(&grid_bis, i, j) == '.'{
+                grid_bis[i].replace_range(j..j+1, "#");
             
-                    // Get the current position
-                    let mut curr_pos = start_pos;
+                // Get the current position
+                let mut curr_pos = start_pos;
             
-                    // Backtrace of already visidted coords
-                    let mut visited : HashSet<(usize, usize)> = HashSet::new();
-                    visited.reserve(10000);
-                    let mut nb_identical_pos = 0;
+                // Backtrace of already visidted coords
+                let mut visited : HashSet<(usize, usize)> = HashSet::new();
+                visited.reserve(10000);
+                let mut nb_identical_pos = 0;
             
-                    // Check every direction
-                    let directions: Vec<(i32, i32)> = vec![(-1, 0), (0, 1), (1, 0), (0, -1)];
+                // Check every direction
+                let directions: Vec<(i32, i32)> = vec![(-1, 0), (0, 1), (1, 0), (0, -1)];
             
-                    for d in directions.iter().cycle(){
-                        while get_char_at(&grid_bis, (curr_pos.0 as i32 + d.0) as usize, (curr_pos.1 as i32 + d.1) as usize)  != '#' &&
-                            get_char_at(&grid_bis, (curr_pos.0 as i32 + d.0) as usize, (curr_pos.1 as i32 + d.1) as usize) != 'X'{
-                            curr_pos.0 = (curr_pos.0 as i32 + d.0) as usize;
-                            curr_pos.1 = (curr_pos.1 as i32 + d.1) as usize;
-                            if visited.insert(curr_pos) == false{
-                                nb_identical_pos += 1;
-                            }
-                        }
-                        if nb_identical_pos >= 1000{
-                            let mut nb = result_cpy.lock().unwrap();
-                            *nb += 1;
-                            break;
-                        }
-                        if get_char_at(&grid_bis, (curr_pos.0 as i32 + d.0) as usize, (curr_pos.1 as i32 + d.1) as usize) == 'X' {
-                            break;
+                for d in directions.iter().cycle(){
+                    while get_char_at(&grid_bis, (curr_pos.0 as i32 + d.0) as usize, (curr_pos.1 as i32 + d.1) as usize)  != '#' &&
+                        get_char_at(&grid_bis, (curr_pos.0 as i32 + d.0) as usize, (curr_pos.1 as i32 + d.1) as usize) != 'X'{
+                        curr_pos.0 = (curr_pos.0 as i32 + d.0) as usize;
+                        curr_pos.1 = (curr_pos.1 as i32 + d.1) as usize;
+                        if visited.insert(curr_pos) == false{
+                            nb_identical_pos += 1;
                         }
                     }
-                    //println!("{:?}", grid_bis);
-                    grid_bis[i].replace_range(j..j+1, ".");
+                    if nb_identical_pos >= 1000{
+                        let mut nb = result_cpy.lock().unwrap();
+                        *nb += 1;
+                        break;
+                    }
+                    if get_char_at(&grid_bis, (curr_pos.0 as i32 + d.0) as usize, (curr_pos.1 as i32 + d.1) as usize) == 'X' {
+                        break;
+                    }
                 }
+                //println!("{:?}", grid_bis);
+                grid_bis[i].replace_range(j..j+1, ".");
+            }
         });
         handles.push(handle);
     }
