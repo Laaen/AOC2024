@@ -48,6 +48,9 @@ fn main() {
     let mut result_2 : HashSet<i64> = HashSet::new();
 
     for elt in equations_list{
+        if result_1.contains(&elt[0]){
+            result_2.insert(elt[0]);
+        }
         let mut res = vec![vec![elt[1] + elt[2], elt[1] * elt[2], concat(elt[1], elt[2])]];
         for i in elt[3..].iter(){
             res.push(get_possibilities_bis(&res.last().unwrap(), *i));
