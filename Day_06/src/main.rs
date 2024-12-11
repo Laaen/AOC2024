@@ -13,7 +13,7 @@ fn get_char_at(data : &Vec<String>, x : usize, y: usize) -> char{
 fn main() {
 
     let data = fs::read_to_string("input").unwrap();
-    let grid : Arc<Vec<String>> = Arc::new(data.split("\r\n").map(|elt| elt.to_string()).collect());
+    let grid : Arc<Vec<String>> = Arc::new(data.split("\n").map(|elt| elt.to_string()).collect());
 
     // Starting position, used for both parts
     let start_pos : (usize, usize) = grid.iter()
