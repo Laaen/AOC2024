@@ -1,31 +1,43 @@
-use std::fs;
+use std::{collections::HashMap, fs};
+use std::time;
+
+fn transform(nb: u64) -> Vec<u64>{
+    if nb == 0{
+        return vec![1];
+    } else if nb.to_string().len() % 2 == 0{
+        let digits = nb.to_string();
+        return vec![digits[0..(digits.len()/2)].parse().unwrap(), digits[(digits.len()/2)..].parse().unwrap()];
+    } else{
+        return vec![nb*2024];
+    }
+}
 
 fn main() {
+
+    let start = time::Instant::now();
+
     let data = fs::read_to_string("input").unwrap();
-    let stones: Vec<u64> = data.split(" ").map(|x| x.parse().unwrap()).collect();
+    let stones_list: Vec<u64> = data.split(" ").map(|x| x.parse().unwrap()).collect();
 
-    let mut result: Vec<u64> = Vec::new();
-    let mut prev: Vec<u64> = stones.clone();
-
-    for i in 0..75{
-        println!("{i}");
-        result.clear();
-        for s in &prev{
-            if *s == 0{
-                result.push(1);
-            } else if s.to_string().len() % 2 == 0{
-                let digits = s.to_string();
-                result.push(digits[0..(digits.len()/2)].parse().unwrap());
-                result.push(digits[(digits.len()/2)..].parse().unwrap());
-    
-            } else{
-                result.push(s * 2024);
-            }
-        }
-        prev = result.clone();
-        
+    let mut stones: HashMap<u64, u64> = HashMap::new();
+    for s in stones_list{
+        stones.entry(s).and_modify(|x| *x += 1).or_insert(1);
     }
 
-    println!("{:?}", result);
+    let mut cache: HashMap<u64, Vec<u64>> = HashMap::new();
 
+    for i in 0..75{
+        let cpy = stones.clone();
+        stones.clear();
+        for (k, v) in cpy.iter(){
+            let res = cache.entry(*k).or_insert(transform(*k));
+            for elt in res{
+                let val = stones.get(elt).unwrap_or(&0).clone();
+                stones.insert(*elt, val + v);
+            }
+        }
+    }
+
+    println!("{:?}", stones.values().map(|x| *x as u64).sum::<u64>());
+    println!("{:?}", time::Instant::now() - start);
 }
