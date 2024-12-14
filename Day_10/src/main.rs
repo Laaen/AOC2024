@@ -2,7 +2,7 @@ use std::{collections::HashSet, fs};
 
 const DIRECTIONS: [(i32, i32); 4] = [(0, 1), (0, -1), (1, 0), (-1, 0)];
 
-fn explore_trail_1<'a, T : Default + Extend<(usize, usize)> + IntoIterator<Item = (usize, usize)>>(grid : &Vec<Vec<i32>>, coords: (usize, usize), value_to_find: i32) -> T{
+fn explore_trail<'a, T : Default + Extend<(usize, usize)> + IntoIterator<Item = (usize, usize)>>(grid : &Vec<Vec<i32>>, coords: (usize, usize), value_to_find: i32) -> T{
 
     let mut result: T = T::default();
     for d in DIRECTIONS{
@@ -14,7 +14,7 @@ fn explore_trail_1<'a, T : Default + Extend<(usize, usize)> + IntoIterator<Item 
                 let data = [(x, y)];
                 result.extend(data);
             }
-            let next_trails = explore_trail_1::<T>(&grid, (x, y), value_to_find + 1);
+            let next_trails = explore_trail::<T>(&grid, (x, y), value_to_find + 1);
             result.extend(next_trails);
         }
     }
@@ -34,8 +34,8 @@ fn main() {
         for y in 0..grid[x].len(){
             // On a trouvé un 0, on suit le chemin
             if grid[x][y] == 0{
-                res_1.extend(explore_trail_1::<HashSet<(usize, usize)>>(&grid, (x, y), 1));
-                res_2.extend(explore_trail_1::<Vec<(usize, usize)>>(&grid, (x, y), 1));
+                res_1.extend(explore_trail::<HashSet<(usize, usize)>>(&grid, (x, y), 1));
+                res_2.extend(explore_trail::<Vec<(usize, usize)>>(&grid, (x, y), 1));
             }
         }
     }
