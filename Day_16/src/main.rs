@@ -117,7 +117,7 @@ impl Maze{
             if d != r.direction.opposite(){
                 match self.get(r.position + &d){
                     Tile::Empty(score) => {
-                        if score >= &(r.current_score - 4000){
+                        if score >= &(r.current_score - 1000){
                             let mut new_r = r.clone();
                             new_r.position = r.position + &d;
                             new_r.visited.insert(r.position);
@@ -142,8 +142,6 @@ impl Maze{
                             r.current_score += 1001;
                         }
                         scores.push(r.current_score);
-                        println!("{}", r.current_score);
-                        println!("{:?}", r.visited);
                         used_tiles.entry(r.current_score)
                         .and_modify(|hs| hs.extend(r.visited.iter()))
                         .or_insert(r.visited.clone());
@@ -168,7 +166,6 @@ impl Maze{
         let mut visited_tiles: HashMap::<i32, HashSet<(i32, i32)>> = HashMap::new();
         let mut visited = HashSet::new();
         self.next_move(&mut Reindeer{position: start, current_score: 0, direction: Direction::East, visited: visited}, &mut scores, &mut visited_tiles);
-        println!("{:?}", visited_tiles[scores.iter().min().unwrap()]);
         (scores.iter().min().unwrap().clone(), visited_tiles[scores.iter().min().unwrap()].len() as i32)
     }
 }
@@ -176,10 +173,10 @@ impl Maze{
 fn main() {
 
     let data = fs::read_to_string("input").unwrap();
-    let mut maze = Maze::from(&data, "\n");
+    let mut maze = Maze::from(&data, "\r\n");
 
-    let min_val = maze.solve();
+    let res = maze.solve();
 
-    println!("{:?}", min_val);
+    println!("Part 1 : {}   | Part 2 : {}", res.0, res.1 + 1);
 
 }
