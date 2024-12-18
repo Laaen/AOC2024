@@ -77,14 +77,10 @@ fn main() {
         for d in directions.iter(){
             let new_coords = vertices_list[i as usize].coords + d;
             if let Some(v) = vertices_list.iter_mut().filter(|vert| vert.coords == new_coords).collect::<Vec<&mut Vertex>>().first_mut(){
-                if v.value == i32::MAX{
-                    v.value = 0;
-                }
-
                 if current.value == i32::MAX{
                     break;
                 }
-                v.value += current.value + 1;
+                v.value = current.value + 1;
 
             }
         } 
@@ -96,7 +92,8 @@ fn main() {
     }
 
     println!("{:?}", visited.iter().filter(|v| v.coords == (70, 70)).collect::<Vec<&Vertex>>());
-    println!("{:?}", vertices_list.iter().filter(|v| v.coords == (69, 69)).collect::<Vec<&Vertex>>());
-    //println!("{:?}", visited);
+
+    // Bruteforce => AJouter un obstacle à chaque fois puis résoudre
+    
 
 }
