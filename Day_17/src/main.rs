@@ -109,8 +109,8 @@ impl VM{
 
 fn main() {
     let data = fs::read_to_string("input").unwrap();
-    let tmp: Vec<&str> = data.split("\r\n\r\n").collect();
-    let registers: Vec<u64> = tmp[0].split("\r\n").map(|line| line.split(": ").collect::<Vec<&str>>().last().unwrap().parse::<u64>().unwrap()).collect();
+    let tmp: Vec<&str> = data.split("\n\n").collect();
+    let registers: Vec<u64> = tmp[0].split("\n").map(|line| line.split(": ").collect::<Vec<&str>>().last().unwrap().parse::<u64>().unwrap()).collect();
 
     let mut vm = VM::init(registers[0], registers[1], registers[2]);
     let instructions: Vec<u64> = tmp[1].split(": ").collect::<Vec<&str>>()[1].split(",").map(|elt| elt.parse::<u64>().unwrap()).collect();
@@ -119,4 +119,27 @@ fn main() {
     println!("{}", part_1.iter().map(|elt| elt.to_string()).collect::<Vec<String>>().join(","));
 
     let expected = [2,4,1,3,7,5,0,3,1,5,4,4,5,5,3,0];
+
+    let mut test = 0o3;
+    test *= 0o10;
+
+    let mut a: u64 = 0o0;
+    let mut i: i32 = (expected.len() - 1) as i32;
+
+    while i >= 0{
+        vm.reset(a);
+        while vm.interpret(&instructions) != &expected[i as usize..expected.len()] {
+            a += 0o1;
+            vm.reset(a);
+        }
+        vm.reset(a);
+        if vm.interpret(&instructions) == &expected[i as usize..expected.len()] && i == 0{
+            println!("{}", a);
+        }
+        a *= 0o10;
+        i -= 1;
+    }
+
+    //println!("{}", a);
+
 }
