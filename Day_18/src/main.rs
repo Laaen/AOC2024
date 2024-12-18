@@ -1,6 +1,7 @@
 use std::i32;
 use std::ops;
 use std::fs;
+use std::time::Instant;
 
 enum Direction{
     North,
@@ -35,19 +36,7 @@ struct Vertex{
     value: i32
 }
 
-fn main() {
-    
-    let height =  70;
-    let width = 70;
-    
-    let data = fs::read_to_string("input").unwrap();
-    let corrupted_coords = &data.split("\n")
-    .map(|line| {
-        let splitted_line: Vec<&str> = line.split(",").collect();
-        (splitted_line[1].parse().unwrap(), splitted_line[0].parse().unwrap())
-    })
-    .collect::<Vec<(i32, i32)>>()[0..1024];
-
+fn generate_vertices_list(height: i32, width: i32, corrupted_coords: &[(i32, i32)]) -> Vec<Vertex>{
     let mut vertices_list: Vec<Vertex> = Vec::new();
 
     for x in 0..height + 1{
@@ -61,6 +50,13 @@ fn main() {
         }
     }
 
+    return vertices_list;
+}
+
+fn solve(vertices_list: &Vec<Vertex>, end_coords: (i32, i32)) -> Option<i32>{
+
+    let mut vertices_list = vertices_list.clone();
+
     let mut visited: Vec<Vertex> = vec![];
 
     let directions = vec![Direction::North, Direction::South, Direction::East, Direction::West];
@@ -70,10 +66,7 @@ fn main() {
     let mut i: i32 = vertices_list.len() as i32 - 1;
 
     while i >= 0{
-        // Visit neighbours set dist to 1
-
         let current= vertices_list[i as usize];
-
         for d in directions.iter(){
             let new_coords = vertices_list[i as usize].coords + d;
             if let Some(v) = vertices_list.iter_mut().filter(|vert| vert.coords == new_coords).collect::<Vec<&mut Vertex>>().first_mut(){
@@ -91,9 +84,39 @@ fn main() {
         i -= 1;
     }
 
-    println!("{:?}", visited.iter().filter(|v| v.coords == (70, 70)).collect::<Vec<&Vertex>>());
+    if let Some(res) = visited.iter().filter(|v| v.coords == end_coords && v.value != i32::MAX).collect::<Vec<&Vertex>>().first(){
+        return Some(res.value);
+    } else {
+        return None;
+    }
+}
 
-    // Bruteforce => AJouter un obstacle à chaque fois puis résoudre
+fn main() {
+
+    let start_time = Instant::now();
     
+    let data = fs::read_to_string("input").unwrap();
+    let corrupted_coords = &data.split("\r\n")
+    .map(|line| {
+        let splitted_line: Vec<&str> = line.split(",").collect();
+        (splitted_line[1].parse().unwrap(), splitted_line[0].parse().unwrap())
+    })
+    .collect::<Vec<(i32, i32)>>();
 
+    let res_1 = solve(&generate_vertices_list(70, 70, &corrupted_coords[0..1024]), (70, 70)).unwrap();
+    println!("{}", res_1);
+
+    let mut start = 1024;
+    let mut end = corrupted_coords.len();
+    let mut i = 0;
+    while end - start > 1{
+        i = (end + start) / 2;
+        if let None = solve(&generate_vertices_list(70, 70, &corrupted_coords[0..i]), (70, 70)){
+            end = i;
+        } else {
+            start = i;
+        }
+    }
+    println!("{},{}", corrupted_coords[i - 1].1, corrupted_coords[i - 1].0);
+    println!("{:?}", Instant::now() - start_time);
 }
