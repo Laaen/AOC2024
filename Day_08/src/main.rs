@@ -10,7 +10,7 @@ fn main() {
     let start = time::Instant::now();
     let data = fs::read_to_string("input").expect("File input should exist");
 
-    let map : Vec<&str> = data.split("\r\n").collect();
+    let map : Vec<&str> = data.split("\n").collect();
     let mut antennas : HashMap<char, Vec<(i32, i32)>> = HashMap::new();
 
     // Get coords of antennas
